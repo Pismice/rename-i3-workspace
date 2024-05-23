@@ -6,7 +6,7 @@ git clone https://github.com/Pismice/rename-i3-workspace
 ```
 
 ### 2. Build it using Zig 0.12.0
-Might work with over Zig versions but that is unlikely.
+Might work with other Zig versions but that is unlikely.
 ```bash
 zig build
 ```
@@ -32,4 +32,7 @@ rename-i3-workspace 1 Code
 ## Possible improvements
 - [ ] Check the arguments passed to the program
 - [ ] Add the possibility to rename a workspace to a multi-word name
-- [ ] Nicer looking codes :)
+- [ ] Nicer looking codes, using comptime to read the structure instead of raw going after specific chains of character :)
+
+## Alternative(s)
+For education purposes, I have also implemented this in Python. You can find it in the *other* folder.
