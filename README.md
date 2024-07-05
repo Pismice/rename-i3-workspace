@@ -29,6 +29,9 @@ You had a workspace named "1: Terminal" or even "1" and you want to change it to
 rename-i3-workspace 1 Code
 ```
 
+## Comparaison between Python, Bash and Zig
+You can find the [comparaisons between the solutions](https://pismice.github.io/HEIG_ZIG/docs/scripting/) I did.
+
 ## Possible improvements
 - [ ] Check the arguments passed to the program
 - [ ] Add the possibility to rename a workspace to a multi-word name
