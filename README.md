@@ -8,6 +8,7 @@ git clone https://github.com/Pismice/rename-i3-workspace
 ### 2. Build it using Zig 0.12.0
 Might work with other Zig versions but that is unlikely.
 ```bash
+cd rename-i3-workspace
 zig build
 ```
 
