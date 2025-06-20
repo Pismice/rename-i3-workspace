@@ -33,21 +33,40 @@ pub fn main() !void {
     // Typical substring of the result = "num":1,"name":"1"
     const needle: []const u8 = try std.fmt.allocPrint(allocator, "num\":{s}", .{args[1]});
     defer allocator.free(needle);
-    var pos_in_text_result = std.mem.indexOf(u8, text_result, needle);
-    pos_in_text_result.? += 15;
-    if (std.mem.eql(u8, args[1], "10")) {
-        pos_in_text_result.? += 1;
+
+    // Debug: print the needle and see if it's found
+    std.debug.print("Looking for needle: {s}\n", .{needle});
+    std.debug.print("JSON output: {s}\n", .{text_result});
+
+    const pos_in_text_result = std.mem.indexOf(u8, text_result, needle);
+    if (pos_in_text_result == null) {
+        std.debug.print("ERROR: Could not find workspace {s} in JSON output\n", .{args[1]});
+        return;
+    }
+    std.debug.print("Found needle at position: {d}\n", .{pos_in_text_result.?});
+
+    // Debug: Show the substring around the found position
+    const debug_start = if (pos_in_text_result.? >= 10) pos_in_text_result.? - 10 else 0;
+    const debug_end = @min(pos_in_text_result.? + 50, text_result.len);
+    std.debug.print("Context around needle: '{s}'\n", .{text_result[debug_start..debug_end]});
+
+    // Look for "name":" pattern after the found workspace number
+    const name_pattern = "\"name\":\"";
+    const name_start_pos = std.mem.indexOf(u8, text_result[pos_in_text_result.?..], name_pattern);
+    if (name_start_pos == null) {
+        std.debug.print("ERROR: Could not find name field for workspace {s}\n", .{args[1]});
+        return;
     }
 
-    var start_of_name = std.mem.indexOf(u8, text_result[pos_in_text_result.? .. pos_in_text_result.? + 50], ",\"");
-    start_of_name.? += 2;
-    start_of_name.? += pos_in_text_result.?;
+    const actual_name_start = pos_in_text_result.? + name_start_pos.? + name_pattern.len;
+    const name_end_pos = std.mem.indexOf(u8, text_result[actual_name_start..], "\"");
+    if (name_end_pos == null) {
+        std.debug.print("ERROR: Could not find end of name field for workspace {s}\n", .{args[1]});
+        return;
+    }
 
-    var end_of_name = std.mem.indexOf(u8, text_result[pos_in_text_result.? .. pos_in_text_result.? + 50], "\"");
-    end_of_name.? += start_of_name.?;
-
-    const diff = end_of_name.? - start_of_name.?;
-    const name = text_result[start_of_name.? - 3 - diff .. end_of_name.? - 3 - diff];
+    const name = text_result[actual_name_start .. actual_name_start + name_end_pos.?];
+    std.debug.print("Extracted workspace name: '{s}'\n", .{name});
 
     // 3. Change the name of the workspace to the new name
     const old_name = try std.fmt.allocPrint(allocator, "\"{s}\"", .{name});
